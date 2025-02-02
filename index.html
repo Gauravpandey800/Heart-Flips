@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart-Flips</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffcccb;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .card-container {
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 300px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .card-front {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-front img {
+            width: 80%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-front button {
+            font-family: 'Dancing Script', cursive;
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .card-front button:hover {
+            background-color: #ff1493;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .question {
+            display: none;
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        .answers button {
+            margin: 10px;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-family: 'Dancing Script', cursive;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .answers button:hover {
+            background: #ff1493;
+        }
+
+        .final-scene {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .question-image {
+            width: 200px;
+            display: none;
+            margin: 10px auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card-container" onclick="flipCard()">
+        <div class="card" id="card">
+            <div class="card-front">
+                <img src="image/cupule 2.jpeg" alt="Valentine Cover">
+                <h2>Happy Valentine's Day! 💖</h2>
+                <button>Open</button>
+            </div>
+            <div class="card-back">
+                <div id="name-container">
+                    <p>What is your name?</p>
+                    <input type="text" id="nameInput" placeholder="Enter your name" required>
+                    <button onclick="startQuestions()">Start</button>
+                    <p id="error-message" style="color: red; display: none;">Please enter your name.</p>
+                </div>
+                <div id="question-container" style="display:none;">
+                    <img id="questionImage" class="question-image" src="" alt="">
+                    <p class="question" id="q1"></p>
+                    <p class="question" id="q2"></p>
+                    <p class="question" id="q3"></p>
+                    <p class="question" id="q4"></p>
+                    <p class="question" id="q5"></p>
+                    <div class="answers" id="answers">
+                        <button onclick="nextQuestion(true)">Yes</button>
+                        <button onclick="nextQuestion(false)">No</button>
+                    </div>
+                </div>
+                <div class="final-scene" id="yesScene">
+                    <h3>Yay! 🎉</h3>
+                    <img src="image/ring cartoon.jpeg" alt="Couple with ring" width="200">
+                    <p>The boy gives the ring to his Valentine! 💍💕</p>
+                </div>
+                <div class="final-scene" id="noScene">
+                    <h3>Oh no! 😢</h3>
+                    <img src="image/monk.jpeg" alt="Monk on mountain" width="200">
+                    <p>Maybe next time? 😢 </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let flipped = false;
+        function flipCard() {
+            if (!flipped) {
+                document.getElementById('card').classList.add('flipped');
+                flipped = true;
+            }
+        }
+        let currentQuestion = 1;
+        let userName = "";
+        const questions = [
+            "{name}, do you like chocolate? 🍫",
+            "{name}, do you believe in love at first sight? 💘",
+            "{name}, would you go on a candlelight dinner? 🍽️",
+            "{name}, do you like surprise gifts? 🎁",
+            "{name}, will you be my Valentine? 💍"
+        ];
+        const images = [
+            "image/chocolate.png",
+            "image/Love Sight.jpeg",
+            "image/dinner.jpeg",
+            "image/gift 3.jpeg",
+            "" // No image for last question
+        ];
+        function startQuestions() {
+            userName = document.getElementById('nameInput').value.trim();
+            if (!userName) {
+                document.getElementById('error-message').style.display = 'block';
+                return;
+            }
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('name-container').style.display = 'none';
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById(`q1`).textContent = questions[0].replace("{name}", userName);
+            document.getElementById('q1').style.display = 'block';
+            document.getElementById('questionImage').src = images[0];
+            document.getElementById('questionImage').style.display = 'block';
+        }
+        function nextQuestion(answer) {
+            document.getElementById(`q${currentQuestion}`).style.display = 'none';
+            document.getElementById('questionImage').style.display = 'none';
+            currentQuestion++;
+            if (currentQuestion <= 5) {
+                document.getElementById(`q${currentQuestion}`).textContent = questions[currentQuestion - 1].replace("{name}", userName);
+                document.getElementById(`q${currentQuestion}`).style.display = 'block';
+                if (images[currentQuestion - 1]) {
+                    document.getElementById('questionImage').src = images[currentQuestion - 1];
+                    document.getElementById('questionImage').style.display = 'block';
+                }
+            } else {
+                document.getElementById('answers').style.display = 'none';
+                if (answer) {
+                    document.getElementById('yesScene').style.display = 'block';
+                } else {
+                    document.getElementById('noScene').style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
